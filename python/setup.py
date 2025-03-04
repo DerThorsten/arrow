@@ -42,6 +42,7 @@ is_64_bit = sys.maxsize > 2**32
 
 # We can't use sys.platform in a cross-compiling situation
 # as here it may be set to the host not target platform
+print("SOABI", sysconfig.get_config_var("SOABI"), sys.platform)
 is_emscripten = (
     sysconfig.get_config_var("SOABI")
     and sysconfig.get_config_var("SOABI").find("emscripten") != -1
@@ -264,10 +265,13 @@ class build_ext(_build_ext):
                           f"{build_base}.")
                     return
 
+            # get env var PYTHON
+            PYTHON_EXECUTABLE = os.environ['PYTHON'];
+
             cmake_options = [
                 f'-DCMAKE_INSTALL_PREFIX={install_prefix}',
-                f'-DPYTHON_EXECUTABLE={sys.executable}',
-                f'-DPython3_EXECUTABLE={sys.executable}',
+                f'-DPYTHON_EXECUTABLE=PYTHON_EXECUTABLE',
+                f'-DPython3_EXECUTABLE=PYTHON_EXECUTABLE',
                 f'-DPYARROW_CXXFLAGS={self.cmake_cxxflags}',
             ]
 

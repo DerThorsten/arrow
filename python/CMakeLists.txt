@@ -161,21 +161,30 @@ endif()
 include(SetupCxxFlags)
 
 if($ENV{PYODIDE})
+  message(STATUS "Building PyArrow for Pyodide / EmscriptenForge")
   # These variables are needed for building PyArrow on Emscripten.
   # If they aren't set, CMake cross compiling fails for Python
   # modules (at least under Pyodide it does).
   set(Python3_INCLUDE_DIR $ENV{PYTHONINCLUDE})
   set(Python3_LIBRARY $ENV{CPYTHONLIB})
-  set(Python3_EXECUTABLE)
-  execute_process(COMMAND ${Python3_EXECUTABLE} -c
-                          "import numpy; print(numpy.__version__)"
-                  OUTPUT_VARIABLE PYODIDE_NUMPY_VERSION
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  string(REGEX MATCH "^([0-9]+)" PYODIDE_NUMPY_MAJOR_VERSION ${PYODIDE_NUMPY_VERSION})
-  if(PYODIDE_NUMPY_MAJOR_VERSION GREATER_EQUAL 2)
-    set(Python3_NumPy_INCLUDE_DIR $ENV{NUMPY_LIB}/_core/include)
-  else()
-    set(Python3_NumPy_INCLUDE_DIR $ENV{NUMPY_LIB}/core/include)
+  # set(Python3_EXECUTABLE)
+
+  message(STATUS "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
+  message(STATUS "Python3_NumPy_INCLUDE_DIR: ${Python3_NumPy_INCLUDE_DIR}")
+  
+  if(NOT DEFINED Python3_NumPy_INCLUDE_DIR)
+    execute_process(COMMAND ${Python3_EXECUTABLE} -c
+                            "import numpy; print(numpy.__version__)"
+                    OUTPUT_VARIABLE PYODIDE_NUMPY_VERSION
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX MATCH "^([0-9]+)" PYODIDE_NUMPY_MAJOR_VERSION ${PYODIDE_NUMPY_VERSION})
+
+    # check if Python3_NumPy_INCLUDE_DIR is already set
+    if(PYODIDE_NUMPY_MAJOR_VERSION GREATER_EQUAL 2)
+      set(Python3_NumPy_INCLUDE_DIR $ENV{NUMPY_LIB}/_core/include)
+    else()
+      set(Python3_NumPy_INCLUDE_DIR $ENV{NUMPY_LIB}/core/include)
+    endif()
   endif()
   set(ENV{_PYTHON_SYSCONFIGDATA_NAME} $ENV{SYSCONFIG_NAME})
   # we set the c and cxx compiler manually to bypass pywasmcross
