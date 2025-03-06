@@ -8,7 +8,7 @@
 #
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing,
+# Unless ARROW_BUILD_SHARED by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 # KIND, either express or implied.  See the License for the
@@ -501,7 +501,8 @@ set_target_properties(arrow_python PROPERTIES VERSION "${PYARROW_FULL_SO_VERSION
 install(TARGETS arrow_python
         ARCHIVE DESTINATION .
         LIBRARY DESTINATION .
-        RUNTIME DESTINATION .)
+        RUNTIME DESTINATION .
+        )
 
 set(PYARROW_CPP_ENCRYPTION_SRCS ${PYARROW_CPP_SOURCE_DIR}/parquet_encryption.cc)
 if(NOT PYARROW_BUILD_PARQUET_ENCRYPTION)
@@ -898,7 +899,7 @@ set(CYTHON_FLAGS "${CYTHON_FLAGS}" "--warning-errors")
 set(CYTHON_FLAGS "${CYTHON_FLAGS}" "--no-c-in-traceback")
 
 if(CYTHON_VERSION VERSION_GREATER_EQUAL "3.1.0a0")
-  list(APPEND CYTHON_FLAGS "-Xfreethreading_compatible=True")
+  # list(APPEND CYTHON_FLAGS "-Xfreethreading_compatible=True")
 endif()
 
 foreach(module ${CYTHON_EXTENSIONS})
@@ -909,6 +910,11 @@ foreach(module ${CYTHON_EXTENSIONS})
   string(REPLACE "." "/" module_root "${module}")
   set(module_SRC pyarrow/${module_root}.pyx)
   set_source_files_properties(${module_SRC} PROPERTIES CYTHON_IS_CXX TRUE)
+
+  # fpic
+
+  set_source_files_properties(${module_SRC} PROPERTIES COMPILE_FLAGS
+                                                        "-fPIC")
 
   cython_add_module(${module_name} ${module_name}_pyx ${module_name}_output ${module_SRC})
 
