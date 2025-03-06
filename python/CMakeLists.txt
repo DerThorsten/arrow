@@ -911,11 +911,6 @@ foreach(module ${CYTHON_EXTENSIONS})
   set(module_SRC pyarrow/${module_root}.pyx)
   set_source_files_properties(${module_SRC} PROPERTIES CYTHON_IS_CXX TRUE)
 
-  # fpic
-
-  set_source_files_properties(${module_SRC} PROPERTIES COMPILE_FLAGS
-                                                        "-fPIC")
-
   cython_add_module(${module_name} ${module_name}_pyx ${module_name}_output ${module_SRC})
 
   if(directories)
