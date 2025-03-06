@@ -265,15 +265,8 @@ class build_ext(_build_ext):
                           f"{build_base}.")
                     return
 
-
-            # get env var PYTHON
-            PYTHON_EXECUTABLE = os.environ['PYTHON']
-            print(f"-- PYTHON_EXECUTABLE: {PYTHON_EXECUTABLE}")
-
             cmake_options = [
                 f'-DCMAKE_INSTALL_PREFIX={install_prefix}',
-                # f'-DPYTHON_EXECUTABLE=PYTHON_EXECUTABLE',
-                # f'-DPython3_EXECUTABLE=PYTHON_EXECUTABLE',
                 f'-DPYARROW_CXXFLAGS={self.cmake_cxxflags}',
             ]
 
